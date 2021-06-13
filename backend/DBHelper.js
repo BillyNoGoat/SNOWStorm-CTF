@@ -3,7 +3,7 @@
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
 
-const adapter = new FileSync('../servicenow-config.json');
+const adapter = new FileSync('./servicenow-config.json');
 const usersDB = low(adapter);
 
 function getUserFromID(id){

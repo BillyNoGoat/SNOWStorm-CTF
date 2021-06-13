@@ -1,4 +1,4 @@
-{
+var config = {
     "adminUser": {
       "username": "portal_user",
       "password": "Portal123"
@@ -167,4 +167,143 @@
           "c3UserID": "399f43c8db383010760d72c7f4961962"
         }
       ]
-  }
+  };
+
+run();
+
+function run() {
+    var adminRoleID = getAdminRole();
+    var adminID = createPortalAdmin(config.adminUser.username, config.adminUser.password);
+    assignUserAdmin(adminID, adminRoleID);
+
+    var users = config.users.map(function (u) {
+        var userID = createHackableUser(u.username);
+        u.c3UserID = userID;
+        assignUserAdmin(userID, adminRoleID);
+        return u;
+    });
+    config.companySecure.sys_id = createCompany(config.companySecure.name);
+    config.companyInsecure.sys_id = createCompany(config.companyInsecure.name);
+
+    createSysProperties();
+    createUIPage();
+
+    config.ticketData.c1.forEach(function (t) {
+        createIncident(t);
+    });
+
+    config.ticketData.c3.forEach(function (t) {
+        createChange(t);
+    });
+
+    config.baseURI = gs.getProperty('glide.servlet.uri').slice(0, -1);
+
+    gs.print(JSON.stringify(config));
+
+
+};
+
+// Create the initial portal user to drive this 
+function createPortalAdmin(username, password) {
+    var newUser = new GlideRecord('sys_user');
+    newUser.initialize();
+    newUser.user_password.setDisplayValue(password);
+    newUser.first_name = "Portal";
+    newUser.last_name = "User";
+    newUser.user_name = username;
+    return newUser.insert();
+}
+
+// Create the user accounts for challenge 3
+function createHackableUser(username) {
+    var password = "Portal123";
+    var newUser = new GlideRecord('sys_user');
+    newUser.initialize();
+    newUser.user_password.setDisplayValue(password);
+    newUser.first_name = "Admin (" + username + ")";
+    newUser.last_name = "User";
+    newUser.user_name = "admin_user_" + username;
+    return newUser.insert();
+}
+
+// Create
+function assignUserAdmin(userID, roleID) {
+    var adminAssign = new GlideRecord('sys_user_has_role');
+    adminAssign.initialize();
+    adminAssign.user = userID;
+    adminAssign.role = roleID;
+    adminAssign.insert();
+}
+
+function getAdminRole() {
+    var adminRole = new GlideRecord('sys_user_role');
+    adminRole.addQuery('name', 'admin');
+    adminRole.query();
+    if (adminRole.next()) {
+        return adminRole.sys_id;
+    }
+}
+
+function createCompany(name) {
+    var company = new GlideRecord('core_company');
+    company.initialize();
+    company.name = name;
+    return company.insert();
+}
+
+function createSysProperties() {
+    // Needed to feed the UI page for c3
+    gs.setProperty("c3flags", JSON.stringify(config.users));
+    // Needed to set the UI page to show on login for c3
+    gs.setProperty("glide.login.home", config.c3FlagPage.name + ".do");
+    // Enable email
+    gs.setProperty("glide.email.smtp.active", true);
+    // Be flexible with lockouts
+    gs.setProperty("glide.user.max_unlock_attempts", 100);
+}
+
+function createUIPage() {
+    var page = new GlideRecord('sys_ui_page');
+    page.initialize();
+    page.name = config.c3FlagPage.name;
+    page.html = GlideStringUtil.base64Decode(config.c3FlagPage.pageB64);
+    return page.insert();
+}
+
+function createIncident(t) {
+    var inc = new GlideRecord('incident');
+    inc.initialize();
+    inc.short_description = t.short_description;
+    inc.description = t.description;
+    inc.impact = t.impact;
+
+    // 0 = normal ticket, 1 = secret ticket
+    if (t.company == 0) {
+        inc.company = config.companySecure.sys_id;
+        inc.description = t.description;
+    } else {
+        inc.company = config.companyInsecure.sys_id;
+        inc.description = t.description + "##FLAG:" + config.serverKey + "##"
+    }
+
+    return inc.insert();
+}
+
+function createChange(t) {
+    var chg = new GlideRecord('change_request');
+    chg.initialize();
+    chg.short_description = t.short_description;
+    chg.description = t.description;
+    chg.impact = t.impact;
+    chg.priority = t.priority;
+    chg.risk = t.risk;
+
+    // 0 = normal ticket, 1 = secret ticket
+    if (t.company == 0) {
+        chg.company = config.companySecure.sys_id;
+    } else {
+        chg.company = config.companyInsecure.sys_id;
+    }
+
+    return chg.insert();
+}

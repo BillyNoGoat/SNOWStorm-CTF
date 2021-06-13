@@ -1,5 +1,5 @@
 const axios = require("axios");
-const config = require("./servicenow-config.json");
+const config = require("../servicenow-config.json");
 
 async function getTickets(url) {
     return await axios.get(url, {
