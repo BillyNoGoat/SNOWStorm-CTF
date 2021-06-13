@@ -1,0 +1,26 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "userID": "billy",
+      "username": "Billy",
+      "password": "$2b$10$azJzsgzMqL1DH4F41tJf3ujmpBblsplNlkslil73tF00qzX0oG3Li",
+      "progress": {
+        "challenge1": false,
+        "challenge2": false,
+        "challenge3": false
+      }
+    },
+    {
+      "id": 2,
+      "userID": "guest",
+      "username": "Guest",
+      "password": "$2b$10$Ai/l4LcrxJvWGVP8DxJMPuCpCuiFIgd8Q.2rwP7mZlnUSptiPAnYy",
+      "progress": {
+        "challenge1": false,
+        "challenge2": false,
+        "challenge3": false
+      }
+    }
+  ]
+}
