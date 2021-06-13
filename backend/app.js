@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
 const logger = require("./logger");
 
-const SNConfig = require("./servicenow-config.json");
+const SNConfig = require("../servicenow-config.json");
 
 const snow = require("./SNHelper");
 
@@ -234,7 +234,7 @@ app.get(
         // const user = users.users.find(u => u.id == id);
         const user = usersDB.getUserFromID(id);
         if (!user) {
-            res.status(500).send(err);
+            res.status(500).send("Error");
         } else if (user) {
             const userData = user;
             res.status(200).send(userData);

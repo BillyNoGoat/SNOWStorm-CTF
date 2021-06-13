@@ -5,8 +5,6 @@ const ExtractJwt = require('passport-jwt').ExtractJwt;
 const config = require("./servicenow-config.json");
 const bcrypt = require("bcrypt");
 
-const users = require("./servicenow-config.json");
-
 function init() {
     passport.use(
         new LocalStrategy(
@@ -15,7 +13,7 @@ function init() {
                 passwordField: 'password'
             },
             async function (username, password, done) {
-                const user = users.users.find(u => u.username == username.toLowerCase());
+                const user = config.users.find(u => u.username == username.toLowerCase());
                 if (!user) {
                     return done(null, false, { error: 'User not found' });
                 }
@@ -37,7 +35,7 @@ function init() {
     opts.secretOrKey = config.JWTToken;
     passport.use(
         new JwtStrategy(opts, function (payload, done) {
-            const user = users.users.find(u => u.id == payload);
+            const user = config.users.find(u => u.id == payload);
             if (!user) {
                 return done(err, false);
             } else {

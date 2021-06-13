@@ -7,7 +7,7 @@
     "build": "nuxt build",
     "start": "nuxt start",
     "generate": "nuxt generate",
-    "backend": "nodemon ./backend/app.js --ignore ./backend/servicenow-config.json"
+    "backend": "nodemon ./backend/app.js --ignore ./servicenow-config.json"
   },
   "dependencies": {
     "@mdi/font": "^5.9.55",
