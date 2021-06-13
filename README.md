@@ -28,7 +28,7 @@ To edit the config, edit `servicenow-config.json` in the root directory. Once co
 
 ### Users
 As SNOWStorm is designed for ServiceNow development teams, there is a login system. Every user should have their own user account which is created by adding a new user object to this array in the config.
-There is a helper endpoint for generating the passwords on the back-end. Once the back-end is running with `npm run backend` browse to http://localhost:3010/password?p=`password123!` and it will bcrypt the password and provide the output for setting user passwords.
+There is a helper endpoint for generating the passwords on the back-end. Once the back-end is running with `npm run backend` browse to http://localhost:3010/password?p=password123! and it will bcrypt the password and provide the output for setting user passwords.
 
 - `id` A unique identifier. Ideally stick to incrementing numerical ID's e.g 1
 - `name` A human readable name of the user e.g Johan
